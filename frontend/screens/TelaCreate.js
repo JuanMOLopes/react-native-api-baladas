@@ -12,15 +12,15 @@ import {
 import API_URL from "../API_URL";
 
 export default function TelaCreate() {
+  const [cidade, setCidade] = useState("");
+  const [data, setData] = useState("");
+  const [tipoDeBalada, setTipoDeBalada] = useState("");
   const [nome, setNome] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [email, setEmail] = useState("");
-  const [telefone, setTelefone] = useState("");
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
 
-  const criarCliente = async () => {
-    if (!nome || !cpf || !email || !telefone) {
+  const criarBalada = async () => {
+    if (!nome || !cidade || !data || !tipoDeBalada) {
       Alert.alert("Erro", "Todos os campos são obrigatórios.");
       return;
     }
@@ -33,20 +33,20 @@ export default function TelaCreate() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ nome, cpf, email, telefone }),
+        body: JSON.stringify({ cidade, data, tipoDeBalada, nome }),
       });
 
       if (resposta.ok) {
-        Alert.alert("Sucesso", "Cliente criado com sucesso!");
+        Alert.alert("Sucesso", "Balada criada com sucesso!");
+        setCidade("");
+        setData("");
+        setTipoDeBalada("");
         setNome("");
-        setCpf("");
-        setEmail("");
-        setTelefone("");
       } else {
-        Alert.alert("Erro", "Erro ao criar o cliente.");
+        Alert.alert("Erro", "Erro ao criar a balada.");
       }
     } catch (error) {
-      setErro(`Erro ao criar cliente: ${error.message}`);
+      setErro(`Erro ao criar balada: ${error.message}`);
     } finally {
       setCarregando(false);
     }
@@ -58,41 +58,39 @@ export default function TelaCreate() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Criar Novo Cliente</Text>
+      <Text style={styles.title}>Criar Nova Balada</Text>
 
+      <TextInput
+        style={styles.input}
+        placeholder="Cidade"
+        value={cidade}
+        onChangeText={setCidade}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Data"
+        value={data}
+        onChangeText={setData}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Tipo de Balada"
+        value={tipoDeBalada}
+        onChangeText={setTipoDeBalada}
+      />
       <TextInput
         style={styles.input}
         placeholder="Nome"
         value={nome}
         onChangeText={setNome}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="CPF"
-        value={cpf}
-        onChangeText={setCpf}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Telefone"
-        value={telefone}
-        onChangeText={setTelefone}
-        keyboardType="phone-pad"
-      />
+     
 
       {carregando ? (
         <ActivityIndicator size="large" color="#353839" />
       ) : (
-        <TouchableOpacity style={styles.button} onPress={criarCliente}>
-          <Text style={styles.buttonText}>Criar Cliente</Text>
+        <TouchableOpacity style={styles.button} onPress={criarBalada}>
+          <Text style={styles.buttonText}>Criar Balada</Text>
         </TouchableOpacity>
       )}
     </View>
