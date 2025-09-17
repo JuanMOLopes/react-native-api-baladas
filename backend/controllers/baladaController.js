@@ -1,3 +1,8 @@
+//O models é responsável pela lógica de acesso ao banco de dados.
+
+//O controller recebe as requisições HTTP da API,
+//  chama as funções do models e retorna as respostas para o frontend.
+
 const Balada = require("../models/balada");
 exports.getAllBaladas = (req, res) => { // Controlador para obter todas as baladas
   Balada.getAllBaladas((err, baladas) => {
