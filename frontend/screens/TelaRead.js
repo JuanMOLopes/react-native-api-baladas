@@ -15,20 +15,21 @@ import {
 import API_URL from "../API_URL";
 
 export default function TelaRead() {
-  const [clientes, setClientes] = useState([]);
+  const [baladas, setBaladas] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
-  const [id, setId] = useState("");
-  const [clienteDesejado, setClienteDesejado] = useState(null);
+  const [cidade, setCidade] = useState("");
+  const [data, setData] = useState("");
+  const [baladaDesejada, setBaladaDesejada] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const procurarClientes = async () => {
+  const procurarBaladas = async () => {
     try {
       const resposta = await fetch(API_URL);
       const dados = await resposta.json();
-      setClientes(dados);
+      setBaladas(dados);
     } catch (error) {
-      setErro(`Erro ao buscar clientes: ${error.message}`);
+      setErro(`Erro ao buscar baladas: ${error.message}`);
     } finally {
       setCarregando(false);
       setRefreshing(false);
@@ -36,32 +37,57 @@ export default function TelaRead() {
   };
 
   useEffect(() => {
-    procurarClientes();
+    procurarBaladas();
   }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    procurarClientes();
+    procurarBaladas();
   }, []);
 
-  const buscarClientePorId = async () => {
-    if (!id) {
-      Alert.alert("Erro", "Por favor, insira um ID válido.");
+  // Procurar balada por cidade
+  const buscarBaladaPorCidade = async () => {
+    if (!cidade) {
+      Alert.alert("Erro", "Por favor, digite uma cidade.");
       return;
     }
 
     try {
       setCarregando(true);
-      const resposta = await fetch(`${API_URL}/${id}`);
+      const resposta = await fetch(`${API_URL}/cidade/${cidade}`);
       const dados = await resposta.json();
 
       if (resposta.ok) {
-        setClienteDesejado(dados);
+        setBaladaDesejada(dados);
       } else {
-        Alert.alert("Erro", "Cliente não encontrado.");
+        Alert.alert("Erro", "Balada não encontrada.");
       }
     } catch (error) {
-      setErro(`Erro ao buscar cliente: ${error.message}`);
+      setErro(`Erro ao buscar balada: ${error.message}`);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  // Procurar balada por data
+  const buscarBaladaPorData = async () => {
+    if (!data) {
+      Alert.alert("Erro", "Por favor, digite uma data.");
+      return;
+    }
+
+    try {
+      setCarregando(true);
+      const resposta = await fetch(`${API_URL}/data/${data}`);
+      const dados = await resposta.json();
+
+      if (resposta.ok) {
+        setBaladaDesejada(dados);
+      } else {
+        Alert.alert("Erro", "Balada não encontrada.");
+      }
+    } catch (error) {
+      setErro(`Erro ao buscar balada: ${error.message}`);
     } finally {
       setCarregando(false);
     }
@@ -77,50 +103,78 @@ export default function TelaRead() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Lista de Clientes</Text>
+      <Text style={styles.title}>Lista de Baladas</Text>
 
+      {/* Lista de baladas */}
       <FlatList
-        data={clientes}
+        data={baladas}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.cardText}>ID: {item.id}</Text>
             <Text style={styles.cardText}>Nome: {item.nome}</Text>
-            <Text style={styles.cardText}>CPF: {item.cpf}</Text>
-            <Text style={styles.cardText}>Email: {item.email}</Text>
-            <Text style={styles.cardText}>Telefone: {item.telefone}</Text>
+            <Text style={styles.cardText}>Cidade: {item.cidade}</Text>
+            <Text style={styles.cardText}>
+              Tipo de Balada: {item.tipoDeBalada}
+            </Text>
+            <Text style={styles.cardText}>Data: {item.data}</Text>
           </View>
         )}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>Nenhuma balada encontrada</Text>
+        }
       />
 
-      <ScrollView>
-        <Text style={styles.subtitle}>Buscar Cliente por ID</Text>
+      {/* Área de busca */}
+      <ScrollView
+        contentContainerStyle={styles.searchContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.subtitle}>Buscar Balada por Cidade</Text>
+        <View style={styles.inputGroup}>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite a cidade"
+            value={cidade}
+            onChangeText={setCidade}
+          />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={buscarBaladaPorCidade}
+          >
+            <Text style={styles.buttonText}>Buscar</Text>
+          </TouchableOpacity>
+        </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Digite o ID do cliente"
-          value={id}
-          onChangeText={setId}
-        />
+        <Text style={styles.subtitle}>Buscar Balada por Data</Text>
+        <View style={styles.inputGroup}>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite a data"
+            value={data}
+            onChangeText={setData}
+          />
+          <TouchableOpacity style={styles.button} onPress={buscarBaladaPorData}>
+            <Text style={styles.buttonText}>Buscar</Text>
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity style={styles.button} onPress={buscarClientePorId}>
-          <Text style={styles.buttonText}>Buscar Cliente</Text>
-        </TouchableOpacity>
-
-        {clienteDesejado && (
-          <View style={styles.card}>
-            <Text style={styles.cardText}>ID: {clienteDesejado.id}</Text>
-            <Text style={styles.cardText}>Nome: {clienteDesejado.nome}</Text>
-            <Text style={styles.cardText}>CPF: {clienteDesejado.cpf}</Text>
-            <Text style={styles.cardText}>Email: {clienteDesejado.email}</Text>
-            <Text style={styles.cardText}>
-              Telefone: {clienteDesejado.telefone}
-            </Text>
-          </View>
-        )}
+        {/* Resultados da busca */}
+        {baladaDesejada &&
+          baladaDesejada.map((item) => (
+            <View style={styles.card} key={item.id}>
+              <Text style={styles.cardText}>ID: {item.id}</Text>
+              <Text style={styles.cardText}>Nome: {item.nome}</Text>
+              <Text style={styles.cardText}>Cidade: {item.cidade}</Text>
+              <Text style={styles.cardText}>
+                Tipo de Balada: {item.tipoDeBalada}
+              </Text>
+              <Text style={styles.cardText}>Data: {item.data}</Text>
+            </View>
+          ))}
       </ScrollView>
     </View>
   );

@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from "react-native";
 export default function TelaInicial() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bem-vindo ao App de Clientes</Text>
+      <Text style={styles.title}>Bem-vindo ao App de Baladas</Text>
       <Text style={styles.subtitle}>
         Use o menu lateral para navegar entre as funcionalidades.
       </Text>

@@ -112,14 +112,27 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: "center",
   },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#353839",
+    marginTop: 20,
+    marginBottom: 8,
+  },
+  searchContainer: {
+    paddingBottom: 40,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
   input: {
     height: 48,
     borderColor: "#ccc",
     borderWidth: 1,
-    marginBottom: 12,
     paddingHorizontal: 12,
     borderRadius: 8,
     backgroundColor: "#fff",
+    marginBottom: 8,
   },
   button: {
     backgroundColor: "#353839",
@@ -132,6 +145,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  card: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    elevation: 2, // sombra leve no Android
+    shadowColor: "#000", // sombra leve no iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  cardText: {
+    fontSize: 16,
+    color: "#353839",
+    marginBottom: 4,
+  },
+  emptyText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#888",
+    marginTop: 20,
+  },
   error: {
     color: "red",
     textAlign: "center",
@@ -139,3 +176,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
