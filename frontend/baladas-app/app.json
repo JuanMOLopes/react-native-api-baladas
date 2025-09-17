@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "clientes-app",
-    "slug": "clientes-app",
+    "name": "baladas-app",
+    "slug": "baladas-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
