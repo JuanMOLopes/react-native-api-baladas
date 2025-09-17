@@ -9,27 +9,20 @@ import {
   StyleSheet,
 } from "react-native";
 
-// Importa a URL da API de um arquivo separado
 import API_URL from "../API_URL";
 
 export default function TelaUpdate() {
-  // Estados para armazenar os valores dos campos do formulário
   const [id, setId] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [data, setData] = useState("");
+  const [tipoDeBalada, setTipoDeBalada] = useState("");
   const [nome, setNome] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [email, setEmail] = useState("");
-  const [telefone, setTelefone] = useState("");
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
 
-  // Função para atualizar um cliente
-  const atualizarCliente = async () => {
-    // Se o ID não for fornecido ou nenhum campo para atualizar, mostra um alerta
-    if (!id || (!nome && !cpf && !email && !telefone)) {
-      Alert.alert(
-        "Erro",
-        "Por favor, insira o ID e pelo menos um campo para atualizar."
-      );
+  const atualizarBalada = async () => {
+    if (!id || !cidade || !data || !tipoDeBalada || !nome) {
+      Alert.alert("Erro", "Todos os campos são obrigatórios.");
       return;
     }
 
@@ -41,75 +34,71 @@ export default function TelaUpdate() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ nome, cpf, email, telefone }),
+        body: JSON.stringify({ cidade, data, tipoDeBalada, nome }),
       });
 
       if (resposta.ok) {
-        Alert.alert("Sucesso", "Cliente atualizado com sucesso!");
+        Alert.alert("Sucesso", "Balada atualizada com sucesso!");
         setId("");
+        setCidade("");
+        setData("");
+        setTipoDeBalada("");
         setNome("");
-        setCpf("");
-        setEmail("");
-        setTelefone("");
       } else {
-        Alert.alert("Erro", "Cliente não encontrado ou erro ao atualizar.");
+        Alert.alert("Erro", "Balada não encontrada ou erro ao atualizar.");
       }
     } catch (error) {
-      setErro(`Erro ao atualizar cliente: ${error.message}`);
+      setErro(`Erro ao atualizar balada: ${error.message}`);
     } finally {
       setCarregando(false);
     }
   };
 
-  // Se houver um erro, mostra a mensagem de erro
   if (erro) {
     return <Text style={styles.error}>{erro}</Text>;
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Atualizar Cliente</Text>
+      <Text style={styles.title}>Atualizar Balada</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="ID do Cliente"
+        placeholder="ID da Balada"
         value={id}
         onChangeText={setId}
         keyboardType="numeric"
       />
       <TextInput
         style={styles.input}
-        placeholder="Nome (opcional)"
+        placeholder="Cidade"
+        value={cidade}
+        onChangeText={setCidade}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Data"
+        value={data}
+        onChangeText={setData}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Tipo de Balada"
+        value={tipoDeBalada}
+        onChangeText={setTipoDeBalada}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Nome"
         value={nome}
         onChangeText={setNome}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="CPF (opcional)"
-        value={cpf}
-        onChangeText={setCpf}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email (opcional)"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Telefone (opcional)"
-        value={telefone}
-        onChangeText={setTelefone}
-        keyboardType="phone-pad"
       />
 
       {carregando ? (
         <ActivityIndicator size="large" color="#353839" />
       ) : (
-        <TouchableOpacity style={styles.button} onPress={atualizarCliente}>
-          <Text style={styles.buttonText}>Atualizar Cliente</Text>
+        <TouchableOpacity style={styles.button} onPress={atualizarBalada}>
+          <Text style={styles.buttonText}>Atualizar Balada</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -120,7 +109,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#f5f5f5",
   },
   title: {
     fontSize: 24,
@@ -133,7 +122,7 @@ const styles = StyleSheet.create({
     height: 48,
     borderColor: "#ccc",
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
     backgroundColor: "#fff",
@@ -143,6 +132,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
+    marginTop: 8,
   },
   buttonText: {
     color: "#fff",
