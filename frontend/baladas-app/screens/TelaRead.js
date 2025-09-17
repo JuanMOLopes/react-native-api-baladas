@@ -25,46 +25,61 @@ export default function TelaRead() {
 
   const procurarBaladas = async () => {
     try {
+      // Tenta obter alguma resposta da API
       const resposta = await fetch(API_URL);
+      // Transforma a resposta da API em JSON
       const dados = await resposta.json();
+      // Coloca essa resposta no estado baladas
       setBaladas(dados);
     } catch (error) {
+      // Em caso de erro, coloca a mensagem no estado erro
       setErro(`Erro ao buscar baladas: ${error.message}`);
     } finally {
+      // Seja qual for o resultado (deu certo ou deu errado), para o carregamento e para a atualização da lista
       setCarregando(false);
       setRefreshing(false);
     }
   };
 
+  // useEffect para carregar as baladas quando o componente for montado
   useEffect(() => {
+    // Chama a função para procurar baladas
     procurarBaladas();
   }, []);
 
   const onRefresh = useCallback(() => {
+    // Refreshing é o indicador de carregamento
     setRefreshing(true);
+    // Procura as baladas novamente
     procurarBaladas();
   }, []);
 
   // Procurar balada por cidade
   const buscarBaladaPorCidade = async () => {
+    // Verifica se o campo cidade está vazio
     if (!cidade) {
+      // Mostra um alerta se estiver vazio
       Alert.alert("Erro", "Por favor, digite uma cidade.");
       return;
     }
 
     try {
       setCarregando(true);
+      // Faz a requisição para a API com a cidade informada
       const resposta = await fetch(`${API_URL}/cidade/${cidade}`);
       const dados = await resposta.json();
 
+      // Se a resposta for OK, atualiza o estado baladaDesejada com os dados retornados
       if (resposta.ok) {
         setBaladaDesejada(dados);
       } else {
         Alert.alert("Erro", "Balada não encontrada.");
       }
     } catch (error) {
+      // Em caso de erro, atualiza o estado erro com a mensagem
       setErro(`Erro ao buscar balada: ${error.message}`);
     } finally {
+      // Em caso de deu certo ou deu erro, para o carregamento
       setCarregando(false);
     }
   };
@@ -107,8 +122,11 @@ export default function TelaRead() {
 
       {/* Lista de baladas */}
       <FlatList
+        // Usa a lista de baladas do estado
         data={baladas}
+        // Chave única para cada item
         keyExtractor={(item) => item.id.toString()}
+        // Renderiza cada item da lista
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.cardText}>ID: {item.id}</Text>
@@ -123,6 +141,7 @@ export default function TelaRead() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        // Se nao tiver nada no banco de dados, mostra essa mensagem
         ListEmptyComponent={
           <Text style={styles.emptyText}>Nenhuma balada encontrada</Text>
         }
@@ -163,6 +182,7 @@ export default function TelaRead() {
         </View>
 
         {/* Resultados da busca */}
+        {/* Exibe todas as baladas correspondentes a busca para o usuário (se for encontrada) */}
         {baladaDesejada &&
           baladaDesejada.map((item) => (
             <View style={styles.card} key={item.id}>
