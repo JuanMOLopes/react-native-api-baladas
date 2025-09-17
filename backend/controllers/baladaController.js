@@ -50,10 +50,14 @@ exports.createBalada = (req, res) => { // Controlador para criar uma nova balada
 exports.updateBalada = (req, res) => { // Controlador para atualizar um cliente existente
   Balada.updateBalada(req.params.id, req.body, (err, result) => {
     if (err) {
+    // retorna o erro com status HTTP 500 (erro interno do servidor).
       res.status(500).send(err);
     } else if (result.changes) {
+      // Se não houve erro e o campo "changes" no resultado indica que
+    // alguma linha foi realmente afetada
       res.status(200).json(result);
     } else {
+    // Nesse caso, retorna status 404 (não encontrado) com a mensagem correspondente.
       res.status(404).send({ message: "Balada não encontrada" });
     }
   });
