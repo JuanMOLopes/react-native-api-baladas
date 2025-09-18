@@ -9,39 +9,47 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import API_URL from "../API_URL";
+import API_URL from "../API_URL"; // Importa a URL base da API
 
 export default function TelaDelete() {
+  // Estados para armazenar o ID digitado, status de carregamento e possíveis erros
   const [id, setId] = useState("");
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
 
+  // Função assíncrona que realiza a exclusão do cliente na API
   const deletarCliente = async () => {
+    // Verifica se o ID foi preenchido, senão mostra alerta
     if (!id) {
       Alert.alert("Erro", "Por favor, insira um ID válido.");
       return;
     }
 
     try {
-      setCarregando(true);
+      setCarregando(true); // Ativa o indicador de carregamento
 
+      // Faz a requisição DELETE para a API, passando o ID no final da URL
       const resposta = await fetch(`${API_URL}/${id}`, {
         method: "DELETE",
       });
 
+      // Se a resposta da API for positiva, mostra alerta de sucesso
       if (resposta.ok) {
         Alert.alert("Sucesso", "Cliente deletado com sucesso!");
-        setId("");
+        setId(""); // Limpa o campo de ID após deletar
       } else {
+        // Caso contrário, alerta que o cliente não foi encontrado ou ocorreu erro
         Alert.alert("Erro", "Cliente não encontrado ou erro ao deletar.");
       }
     } catch (error) {
+      // Se ocorrer algum erro inesperado (ex: servidor fora do ar), salva no estado
       setErro(`Erro ao deletar cliente: ${error.message}`);
     } finally {
-      setCarregando(false);
+      setCarregando(false); // Desativa o indicador de carregamento
     }
   };
 
+  // Se houver erro armazenado, mostra ele diretamente na tela
   if (erro) {
     return <Text style={styles.error}>{erro}</Text>;
   }
@@ -50,6 +58,7 @@ export default function TelaDelete() {
     <View style={styles.container}>
       <Text style={styles.title}>Deletar Cliente</Text>
 
+      {/* Campo para o usuário digitar o ID do cliente */}
       <TextInput
         style={styles.input}
         placeholder="Digite o ID do cliente"
@@ -58,6 +67,7 @@ export default function TelaDelete() {
         keyboardType="numeric"
       />
 
+      {/* Se estiver carregando, mostra um spinner. Caso contrário, mostra o botão */}
       {carregando ? (
         <ActivityIndicator size="large" color="#353839" />
       ) : (
@@ -69,6 +79,7 @@ export default function TelaDelete() {
   );
 }
 
+// Estilos da tela
 const styles = StyleSheet.create({
   container: {
     flex: 1,
