@@ -1,57 +1,70 @@
 import React, { useState } from "react";
+
 import {
-  View,
-  Text,
+  View, 
+  Text, 
   TextInput,
   TouchableOpacity,
-  StyleSheet,
+  StyleSheet, 
   Alert,
-  ActivityIndicator,
+  ActivityIndicator, // Mostra um círculo de carregando
 } from "react-native";
 
+// Importa o endereço do servidor
 import API_URL from "../API_URL";
 
 export default function TelaCreate() {
+  // Variáveis para guardar o que o usuário digita
   const [cidade, setCidade] = useState("");
   const [data, setData] = useState("");
   const [tipoDeBalada, setTipoDeBalada] = useState("");
   const [nome, setNome] = useState("");
+  // Variável para mostrar se está carregando
   const [carregando, setCarregando] = useState(false);
+  // Variável para mostrar mensagens de erro
   const [erro, setErro] = useState("");
 
+  // Função que envia os dados para o servidor
   const criarBalada = async () => {
+    // Se algum campo estiver vazio, mostra aviso
     if (!nome || !cidade || !data || !tipoDeBalada) {
       Alert.alert("Erro", "Todos os campos são obrigatórios.");
       return;
     }
 
     try {
-      setCarregando(true);
+      setCarregando(true); // Mostra círculo de carregando
 
+      // Envia os dados para o servidor
       const resposta = await fetch(API_URL, {
-        method: "POST",
+        method: "POST", // Diz que é para criar
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json", // Diz que está enviando texto
         },
-        body: JSON.stringify({ cidade, data, tipoDeBalada, nome }),
+        body: JSON.stringify({ cidade, data, tipoDeBalada, nome }), // Dados que vão ser enviados
       });
 
       if (resposta.ok) {
+        // Se deu certo, mostra mensagem de sucesso
         Alert.alert("Sucesso", "Balada criada com sucesso!");
+        // Limpa os campos
         setCidade("");
         setData("");
         setTipoDeBalada("");
         setNome("");
       } else {
+        // Se deu erro, mostra mensagem de erro
         Alert.alert("Erro", "Erro ao criar a balada.");
       }
     } catch (error) {
+      // Se deu erro na conexão, mostra mensagem
       setErro(`Erro ao criar balada: ${error.message}`);
     } finally {
-      setCarregando(false);
+      setCarregando(false); // Para de mostrar círculo de carregando
     }
   };
 
+  // Se tiver erro, mostra na tela
   if (erro) {
     return <Text style={styles.error}>{erro}</Text>;
   }
@@ -60,32 +73,36 @@ export default function TelaCreate() {
     <View style={styles.container}>
       <Text style={styles.title}>Criar Nova Balada</Text>
 
+      {/* Campos para digitar as informações da balada */}
       <TextInput
         style={styles.input}
         placeholder="Cidade"
         value={cidade}
         onChangeText={setCidade}
       />
+
       <TextInput
         style={styles.input}
         placeholder="Data"
         value={data}
         onChangeText={setData}
       />
+
       <TextInput
         style={styles.input}
         placeholder="Tipo de Balada"
         value={tipoDeBalada}
         onChangeText={setTipoDeBalada}
       />
+
       <TextInput
         style={styles.input}
         placeholder="Nome"
         value={nome}
         onChangeText={setNome}
       />
-     
 
+      {/* Se estiver carregando, mostra círculo. Se não, mostra botão */}
       {carregando ? (
         <ActivityIndicator size="large" color="#353839" />
       ) : (

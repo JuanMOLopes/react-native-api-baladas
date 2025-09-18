@@ -1,68 +1,82 @@
 import React, { useState } from "react";
+
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Alert, 
+  ActivityIndicator, // Mostra um círculo de carregando
 } from "react-native";
 
+// Importa o endereço do servidor
 import API_URL from "../API_URL";
 
 export default function TelaDelete() {
+  // Variável para guardar o ID digitado
   const [id, setId] = useState("");
+  // Variável para mostrar se está carregando
   const [carregando, setCarregando] = useState(false);
+  // Variável para mostrar mensagens de erro
   const [erro, setErro] = useState("");
 
-  const deletarCliente = async () => {
+  // Função que envia o pedido de deletar para o servidor
+  const deletarBalada = async () => {
+    // Se o campo de digitar id estiver vazio (usuario nao digitou nada), mostra aviso
     if (!id) {
       Alert.alert("Erro", "Por favor, insira um ID válido.");
       return;
     }
 
     try {
-      setCarregando(true);
+      setCarregando(true); // Mostra círculo de carregando
 
+      // Envia o pedido de deletar a balada que possui o ID digitado para o servidor
       const resposta = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
+        method: "DELETE", // Diz que é para deletar
       });
 
       if (resposta.ok) {
-        Alert.alert("Sucesso", "Cliente deletado com sucesso!");
-        setId("");
+        // Se deu certo, mostra mensagem de sucesso
+        Alert.alert("Sucesso", "Balada deletada com sucesso!");
+        setId(""); // Limpa o campo
       } else {
-        Alert.alert("Erro", "Cliente não encontrado ou erro ao deletar.");
+        // Se deu erro, mostra mensagem de erro
+        Alert.alert("Erro", "Balada não encontrada ou erro ao deletar.");
       }
     } catch (error) {
-      setErro(`Erro ao deletar cliente: ${error.message}`);
+      // Se deu erro na conexão, mostra mensagem de erro
+      setErro(`Erro ao deletar balada: ${error.message}`);
     } finally {
-      setCarregando(false);
+      setCarregando(false); // Para de mostrar círculo de carregando
     }
   };
 
+  // Se tiver erro, mostra na tela
   if (erro) {
     return <Text style={styles.error}>{erro}</Text>;
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Deletar Cliente</Text>
+      <Text style={styles.title}>Deletar Balada</Text>
 
+      {/* Campo para digitar o ID da balada */}
       <TextInput
         style={styles.input}
-        placeholder="Digite o ID do cliente"
+        placeholder="Digite o ID da balada"
         value={id}
         onChangeText={setId}
         keyboardType="numeric"
       />
 
+      {/* Se estiver carregando, mostra círculo. Se não, mostra botão */}
       {carregando ? (
         <ActivityIndicator size="large" color="#353839" />
       ) : (
-        <TouchableOpacity style={styles.button} onPress={deletarCliente}>
-          <Text style={styles.buttonText}>Deletar Cliente</Text>
+        <TouchableOpacity style={styles.button} onPress={deletarBalada}>
+          <Text style={styles.buttonText}>Deletar Balada</Text>
         </TouchableOpacity>
       )}
     </View>

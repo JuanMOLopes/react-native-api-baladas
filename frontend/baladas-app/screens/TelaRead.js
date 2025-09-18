@@ -1,91 +1,93 @@
 import React, { useState, useEffect, useCallback } from "react";
+
 import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  TextInput,
+  View, 
+  Text, 
+  FlatList, 
+  ActivityIndicator, // Círculo de carregando
+  TextInput, 
   TouchableOpacity,
-  StyleSheet,
-  Alert,
+  StyleSheet, 
+  Alert, 
   ScrollView,
-  RefreshControl,
+  RefreshControl, // Atualiza a lista puxando para baixo
 } from "react-native";
 
+// Importa o endereço do servidor
 import API_URL from "../API_URL";
 
 export default function TelaRead() {
-  const [baladas, setBaladas] = useState([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [data, setData] = useState("");
-  const [baladaDesejada, setBaladaDesejada] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
+  // Variáveis para guardar dados e controlar a tela
+  const [baladas, setBaladas] = useState([]); // Lista de todas as baladas
+  const [carregando, setCarregando] = useState(true); // Mostra círculo de carregando
+  const [erro, setErro] = useState(""); // Mensagem de erro
+  const [cidade, setCidade] = useState(""); // Cidade digitada
+  const [data, setData] = useState(""); // Data digitada
+  const [baladaDesejada, setBaladaDesejada] = useState(null); // Resultado da busca por cidade ou data
+  const [refreshing, setRefreshing] = useState(false); // Atualização da lista
 
+  // Função para buscar todas as baladas
   const procurarBaladas = async () => {
     try {
-      // Tenta obter alguma resposta da API
+      // Busca as baladas no servidor
       const resposta = await fetch(API_URL);
-      // Transforma a resposta da API em JSON
+      // Converte a lista de baladas que vem do servidor para JSON
       const dados = await resposta.json();
-      // Coloca essa resposta no estado baladas
-      setBaladas(dados);
+      setBaladas(dados); // Salva as baladas na variável
     } catch (error) {
-      // Em caso de erro, coloca a mensagem no estado erro
-      setErro(`Erro ao buscar baladas: ${error.message}`);
+      setErro(`Erro ao buscar baladas: ${error.message}`); // Mostra erro se der problema
     } finally {
-      // Seja qual for o resultado (deu certo ou deu errado), para o carregamento e para a atualização da lista
-      setCarregando(false);
-      setRefreshing(false);
+      setCarregando(false); // Para de mostrar círculo de carregando
+      setRefreshing(false); // Para de atualizar a lista
     }
   };
 
-  // useEffect para carregar as baladas quando o componente for montado
+  // Carrega as baladas quando a tela abre
   useEffect(() => {
-    // Chama a função para procurar baladas
     procurarBaladas();
   }, []);
 
+  // Função para atualizar a lista puxando para baixo
   const onRefresh = useCallback(() => {
-    // Refreshing é o indicador de carregamento
+    // Inicia o carregamento
     setRefreshing(true);
-    // Procura as baladas novamente
+    // Procura novamente todas as baladas
     procurarBaladas();
   }, []);
 
-  // Procurar balada por cidade
+  // Função para buscar balada por cidade
   const buscarBaladaPorCidade = async () => {
-    // Verifica se o campo cidade está vazio
+    // Se o campo de cidade estiver vazio, mostra aviso
     if (!cidade) {
-      // Mostra um alerta se estiver vazio
       Alert.alert("Erro", "Por favor, digite uma cidade.");
       return;
     }
 
     try {
       setCarregando(true);
-      // Faz a requisição para a API com a cidade informada
+      // Busca balada no servidor pela cidade
       const resposta = await fetch(`${API_URL}/cidade/${cidade}`);
       const dados = await resposta.json();
 
-      // Se a resposta for OK, atualiza o estado baladaDesejada com os dados retornados
+      // Se deu certo, coloca o resultado na variável
       if (resposta.ok) {
         setBaladaDesejada(dados);
       } else {
+        // Se não encontrou, mostra aviso
         Alert.alert("Erro", "Balada não encontrada.");
       }
     } catch (error) {
-      // Em caso de erro, atualiza o estado erro com a mensagem
+      // Se deu erro na conexão, mostra mensagem
       setErro(`Erro ao buscar balada: ${error.message}`);
     } finally {
-      // Em caso de deu certo ou deu erro, para o carregamento
+      // Para de mostrar círculo de carregando independente do que aconteceu (deu certo ou erro)
       setCarregando(false);
     }
   };
 
-  // Procurar balada por data
+  // Função para buscar balada por data
   const buscarBaladaPorData = async () => {
+    // Se o campo de data estiver vazio, mostra aviso
     if (!data) {
       Alert.alert("Erro", "Por favor, digite uma data.");
       return;
@@ -93,25 +95,32 @@ export default function TelaRead() {
 
     try {
       setCarregando(true);
+      // Busca balada no servidor pela data
       const resposta = await fetch(`${API_URL}/data/${data}`);
       const dados = await resposta.json();
 
+      // Se deu certo, coloca o resultado na variável
       if (resposta.ok) {
         setBaladaDesejada(dados);
       } else {
+        // Se não encontrou, mostra aviso
         Alert.alert("Erro", "Balada não encontrada.");
       }
     } catch (error) {
+      // Se deu erro na conexão, mostra mensagem
       setErro(`Erro ao buscar balada: ${error.message}`);
     } finally {
+      // Para de mostrar círculo de carregando independente do que aconteceu (deu certo ou erro)
       setCarregando(false);
     }
   };
 
+  // Se estiver carregando, mostra círculo
   if (carregando) {
     return <ActivityIndicator size="large" color="#353839" />;
   }
 
+  // Se tiver erro, mostra mensagem
   if (erro) {
     return <Text style={styles.error}>{erro}</Text>;
   }
@@ -122,11 +131,8 @@ export default function TelaRead() {
 
       {/* Lista de baladas */}
       <FlatList
-        // Usa a lista de baladas do estado
-        data={baladas}
-        // Chave única para cada item
-        keyExtractor={(item) => item.id.toString()}
-        // Renderiza cada item da lista
+        data={baladas} // Lista de baladas
+        keyExtractor={(item) => item.id.toString()} // Chave única para evitar duplicatas
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.cardText}>ID: {item.id}</Text>
@@ -141,8 +147,9 @@ export default function TelaRead() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        // Se nao tiver nada no banco de dados, mostra essa mensagem
+        //Caso não tenha baladas no banco de dados, mostra mensagem
         ListEmptyComponent={
+          
           <Text style={styles.emptyText}>Nenhuma balada encontrada</Text>
         }
       />
@@ -152,6 +159,7 @@ export default function TelaRead() {
         contentContainerStyle={styles.searchContainer}
         showsVerticalScrollIndicator={false}
       >
+        {/* Busca por cidade */}
         <Text style={styles.subtitle}>Buscar Balada por Cidade</Text>
         <View style={styles.inputGroup}>
           <TextInput
@@ -168,6 +176,7 @@ export default function TelaRead() {
           </TouchableOpacity>
         </View>
 
+        {/* Busca por data */}
         <Text style={styles.subtitle}>Buscar Balada por Data</Text>
         <View style={styles.inputGroup}>
           <TextInput
@@ -181,8 +190,7 @@ export default function TelaRead() {
           </TouchableOpacity>
         </View>
 
-        {/* Resultados da busca */}
-        {/* Exibe todas as baladas correspondentes a busca para o usuário (se for encontrada) */}
+        {/* Se encontrou alguma balada com as informações desejadas, mostra os resultados */}
         {baladaDesejada &&
           baladaDesejada.map((item) => (
             <View style={styles.card} key={item.id}>
