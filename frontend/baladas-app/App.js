@@ -14,37 +14,48 @@ import TelaDelete from "./screens/TelaDelete";
 // Cria o objeto do drawer navigator
 const Drawer = createDrawerNavigator();
 
-// Função principal do app
+
 export default function App() {
   return (
     // NavigationContainer envolve toda a navegação do app
     <NavigationContainer>
       {/* Drawer.Navigator define o menu lateral e suas telas */}
       <Drawer.Navigator>
+
         {/* Tela inicial do app */}
         <Drawer.Screen
-          name="TelaInicial"
-          component={TelaInicial}
-          options={{ title: "Tela Inicial" }}
+          name="TelaInicial"  //nome da tela
+          component={TelaInicial} //tela em si
+          options={{ title: "Tela Inicial" }} //título exibido no menu  
         />
+
+
         {/* Tela para listar baladas (Read) */}
         <Drawer.Screen
           name="TelaRead"
           component={TelaRead}
           options={{ title: "Método Read" }}
         />
+
+
         {/* Tela para criar balada (Create) */}
         <Drawer.Screen
           name="TelaCreate"
           component={TelaCreate}
           options={{ title: "Método Create" }}
         />
+
+
+
         {/* Tela para atualizar balada (Update) */}
         <Drawer.Screen
           name="TelaUpdate"
           component={TelaUpdate}
           options={{ title: "Método Update" }}
         />
+
+
+
         {/* Tela para deletar balada (Delete) */}
         <Drawer.Screen
           name="TelaDelete"
