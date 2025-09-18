@@ -1,18 +1,26 @@
+
+// Importa o express, que ajuda a criar o servidor
 const express = require("express");
+// Importa o cors, que permite o acesso do front-end
 const cors = require('cors')
+
+// Cria o aplicativo do servidor
 const app = express();
+// Define a porta onde o servidor vai rodar
 const port = 3000;
-// Middleware para analisar o corpo das requisições em JSON
+
+// Permite que o servidor entenda dados em formato JSON
 app.use(express.json());
 
-// usando o cors para conseguir requisições no front-end
+// Permite que o front-end acesse o servidor sem bloqueios
 app.use(cors())
 
-// Importando as rotas do cliente
+// Importa as rotas das baladas
 const clienteRoutes = require("./routes/baladaRoutes");
-// Usando as rotas do cliente com o prefixo '/baladas'
+// Usa as rotas das baladas, começando com /baladas
 app.use("/baladas", clienteRoutes);
-// Iniciando o servidor na porta especificada
+
+// Inicia o servidor e mostra uma mensagem no console
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });

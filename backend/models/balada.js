@@ -1,11 +1,11 @@
-//O models é responsável pela lógica de acesso ao banco de dados.
+// Este arquivo cuida do acesso ao banco de dados das baladas
 
-//O controller recebe as requisições HTTP da API,
-//  chama as funções do models e retorna as respostas para o frontend.
-
+// Importa o sqlite3 para usar o banco de dados
 const sqlite3 = require("sqlite3").verbose();
+// Caminho do arquivo do banco de dados
 const dbPath = "./infra/database.db";
-// abrir conexão com o banco de dados
+
+// Abre a conexão com o banco de dados
 function openDbConnection() {
   let db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
@@ -14,7 +14,8 @@ function openDbConnection() {
   });
   return db;
 }
-// buscar todas as baladas
+
+// Busca todas as baladas cadastradas
 function getAllBaladas(callback) {
   const db = openDbConnection();
   db.all("SELECT * FROM Baladas", [], (err, rows) => {
@@ -22,7 +23,8 @@ function getAllBaladas(callback) {
     callback(err, rows);
   });
 }
-//  buscar baladas pelo nome da cidade
+
+// Busca baladas pelo nome da cidade
 function getBaladaByCidade(cidade, callback) {
   const db = openDbConnection();
   db.all(
@@ -34,7 +36,8 @@ function getBaladaByCidade(cidade, callback) {
     }
   );
 }
-//  buscar baladas pela data
+
+// Busca baladas pela data
 function getBaladaByData(data, callback) {
   const db = openDbConnection();
   db.all(
@@ -46,7 +49,8 @@ function getBaladaByData(data, callback) {
     }
   );
 }
-//  criar uma nova balada
+
+// Cria uma nova balada no banco de dados
 function createBalada(balada, callback) {
   const { cidade, data, tipoDeBalada, nome } = balada;
   const db = openDbConnection();
@@ -55,11 +59,12 @@ function createBalada(balada, callback) {
     [cidade, data, tipoDeBalada, nome],
     function (err) {
       db.close();
-      callback(err, { id: this.lastID });
+      callback(err, { id: this.lastID }); // Retorna o id da nova balada
     }
   );
 }
-//  atualizar uma balada existente
+
+// Atualiza uma balada já existente
 function updateBalada(id, balada, callback) {
   const { cidade, data, tipoDeBalada, nome } = balada;
   const db = openDbConnection();
@@ -68,18 +73,21 @@ function updateBalada(id, balada, callback) {
     [cidade, data, tipoDeBalada, nome, id],
     function (err) {
       db.close();
-      callback(err, { changes: this.changes });
+      callback(err, { changes: this.changes }); // Retorna quantas linhas foram alteradas
     }
   );
 }
-// deletar uma balada
+
+// Deleta uma balada pelo id
 function deleteBalada(id, callback) {
   const db = openDbConnection();
   db.run("DELETE FROM Baladas WHERE id = ?", [id], function (err) {
     db.close();
-    callback(err, { changes: this.changes });
+    callback(err, { changes: this.changes }); // Retorna quantas linhas foram apagadas
   });
 }
+
+// Exporta as funções para serem usadas em outros arquivos
 module.exports = {
   getAllBaladas,
   getBaladaByCidade,
